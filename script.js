@@ -93,7 +93,7 @@ function renderMachines() {
     categoryMachines.forEach((m) => {
       categoryGrid.insertAdjacentHTML('beforeend', `
         <a class="card card-surface machine-card" href="machines/detail.html?id=${m.slug}">
-          <div class="card-media"><img src="${m.image}" alt="${m.name}"></div>
+          <div class="card-media"><img src="${m.image}" alt="${m.name}" loading="lazy"></div>
           <div class="card-content">
             <div class="text-muted">${m.type}</div>
             <div class="card-subtitle">${m.name}</div>
@@ -116,7 +116,7 @@ function renderClientStrip() {
   clients.forEach((client) => {
     strip.insertAdjacentHTML('beforeend', `
       <a class="client-logo" href="${client.href}" target="_blank" rel="noopener noreferrer" aria-label="${client.name}">
-        <img src="${client.logo}" alt="${client.name} logo" />
+        <img src="${client.logo}" alt="${client.name} logo" loading="lazy" />
       </a>
     `);
   });
@@ -128,7 +128,7 @@ function renderClientGrid() {
   clients.forEach((client) => {
     grid.insertAdjacentHTML('beforeend', `
       <a class="client-card" href="${client.href}" target="_blank" rel="noopener noreferrer">
-        <img src="${client.logo}" alt="${client.name} logo" />
+        <img src="${client.logo}" alt="${client.name} logo" loading="lazy" />
         <span>${client.name}</span>
       </a>
     `);
@@ -140,7 +140,7 @@ function renderParts() {
   parts.forEach((p) => {
     partsWrap.insertAdjacentHTML('beforeend', `
       <a class="gallery-card" href="parts/detail.html?id=${p.slug}">
-        <img src="${p.image}" alt="${p.name}">
+        <img src="${p.image}" alt="${p.name}" loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-material">${p.material}</span>
           <h3>${p.name}</h3>
@@ -211,6 +211,28 @@ function runDiagnostics() {
   }
 }
 
+// Lazy loading handler
+function handleLazyLoading() {
+  const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+  
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.classList.add('loaded');
+          observer.unobserve(img);
+        }
+      });
+    });
+    
+    lazyImages.forEach(img => imageObserver.observe(img));
+  } else {
+    // Fallback for older browsers
+    lazyImages.forEach(img => img.classList.add('loaded'));
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderHero();
   renderUSP();
@@ -222,5 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderIndustries();
   renderProcess();
   $('#year').textContent = new Date().getFullYear();
+  
+  // Initialize lazy loading
+  handleLazyLoading();
   runDiagnostics();
 });

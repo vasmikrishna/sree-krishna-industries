@@ -740,6 +740,27 @@ textarea { min-height:140px; resize:vertical; }
   color: #d0d0d0;
 }
 
+/* Image Optimization */
+img {
+  max-width: 100%;
+  height: auto;
+  transition: opacity 0.3s ease;
+}
+
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+img[loading="lazy"].loaded {
+  opacity: 1;
+}
+
+/* Preload critical images */
+.hero-media img {
+  loading: eager;
+}
+
 /* RFQ Content Styling */
 .rfq-content {
   display: flex;
